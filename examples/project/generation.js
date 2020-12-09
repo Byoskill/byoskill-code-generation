@@ -53,6 +53,9 @@ exports.default = class Generation {
       value1: 'abcdef',
       value2: '0132456789'
     }
+    const model = catalog.json('models.json')
+    if (model == null) throw new Error('Model not found')
+
     const generatedContent = this.template.handlebars('model1.handlebars', context)
     this.fs.writeFileSync(this.path.join(this.output, 'example.txt'), generatedContent)
   }
