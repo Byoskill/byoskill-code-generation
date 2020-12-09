@@ -28,10 +28,10 @@ exports.default = class Generation {
     this.context = context
     this.output = context.output
     this.log = context.log
-    this.docapi = this.context.catalog
     this.template = this.context.template
     this.path = this.context.path
     this.fs = this.context.fs
+    this.catalog = this.context.catalog;
     // Options to generate the code
     this.genOpts = {
       testFolder: this.context.path.join(this.output, '__tests__'),
@@ -53,7 +53,7 @@ exports.default = class Generation {
       value1: 'abcdef',
       value2: '0132456789'
     }
-    const model = catalog.json('models.json')
+    const model = this.catalog.json('models.json')
     if (model == null) throw new Error('Model not found')
 
     const generatedContent = this.template.handlebars('model1.handlebars', context)

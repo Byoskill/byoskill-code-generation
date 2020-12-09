@@ -7,7 +7,7 @@ const CodeGeneration = require('../lib/code-generation')
 test('Code generation', () => {
   try {
     const argv = {
-      catalog: './examples/models.json',
+      catalog: './examples',
       output: './output',
       project: './examples/project'
     }
