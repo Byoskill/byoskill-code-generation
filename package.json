@@ -5,7 +5,16 @@
   "main": "index.js",
   "scripts": {
     "test": "jest"
-  },
+  },    
+  "bin": {
+    "bgenerate": "./index.js"
+  },  
+  "files": [
+    "index.js",
+    "lib/",
+    "examples/",
+    "__tests__"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/byoskill/byoskill-code-generation.git"
