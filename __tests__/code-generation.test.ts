@@ -1,6 +1,8 @@
-const tmp = require('tmp')
+import CodeGeneration from '../src/code-generation';
+import * as tmp from 'tmp'
+
 // const path = require('path')
-const CodeGeneration = require('../lib/code-generation')
+
 // const chai = require('chai')
 // const expect = chai.expect
 

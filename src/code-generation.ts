@@ -1,20 +1,36 @@
-'use strict'
+import * as fs from 'fs';
+import * as path from 'path';
+import Handlebars from 'handlebars'
+import { Logger } from 'winston';
 
-const Handlebars = require('handlebars')
-const log = require('./logger').logger
-const fs = require('fs')
-const path = require('path')
 const fse = require('fs-extra')
-const Template = require('./template-renderer')
 const JSONL = require('json-literal')
-const Catalog = require('./catalog')
+
+
+import {logger} from './logger';
+
+import Args from './api/args';
+import Template from './template-renderer'
+import Catalog from './catalog'
+import ProjectInformation from './api/project-information';
+import { GenerationContext } from './api/generation-context';
+
+
 
 const GLOBAL_JS = 'globals.js'
-class CodeGeneration {
-  constructor (argv) {
-    log.info(`Project sources are ${argv.project}`)
 
-    this.argv = argv
+
+
+
+export default class CodeGeneration {
+
+  private projectInformation: ProjectInformation;
+  private catalog: Catalog;
+
+
+  constructor(public argv: Args) {
+    logger.info(`Project sources are ${argv.project}`)
+
     this.projectInformation = {
       project: argv.project,
       templates: path.join(argv.project, 'templates'),
@@ -30,31 +46,31 @@ class CodeGeneration {
     if (!projectStat.isDirectory) throw new Error('Project parameter expects a folder')
   }
 
-  readScript (scriptPath) {
+  readScript(scriptPath: string) {
     return fs.readFileSync(scriptPath, 'utf8')
   }
 
-  loadPartials () {
-    const files = fs.readdirSync(this.projectInformation.partials)
+  loadPartials() {
+    const files: string[] = fs.readdirSync(this.projectInformation.partials)
     // listing all files using forEach
     files.forEach((fileName) => {
       // Do whatever you want to do with the file
       const absPath = path.join(this.projectInformation.partials, fileName)
       const partialName = path.parse(fileName).name
-      log.info(`Registering partial ${partialName} from ${absPath}`)
+      logger.info(`Registering partial ${partialName} from ${absPath}`)
       const partialContent = this.readScript(absPath) + ''
       Handlebars.registerPartial(partialName, partialContent)
     })
   }
 
-  loadHelpers (globalsObject, contextObject) {
-    const files = fs.readdirSync(this.projectInformation.helpers)
+  loadHelpers(globalsObject: any, contextObject: GenerationContext) {
+    const files: string[] = fs.readdirSync(this.projectInformation.helpers)
     // listing all files using forEach
     files.forEach((fileName) => {
       // Do whatever you want to do with the file
       const absPath = path.join(this.projectInformation.helpers, fileName)
       const partialName = path.parse(fileName).name
-      log.info(`Registering helper ${partialName} from ${absPath}`)
+      logger.info(`Registering helper ${partialName} from ${absPath}`)
       const partialContent = this.readScript(absPath) + ''
       const globals = globalsObject
       const context = contextObject
@@ -64,41 +80,41 @@ class CodeGeneration {
     })
   }
 
-  loadGlobals () {
-    log.info('Read globals.')
+  loadGlobals(): any {
+    logger.info('Read globals.')
     const partialContent = this.readScript(path.join(this.projectInformation.project, GLOBAL_JS)) + ''
     const globals = eval(partialContent)
     return globals
   }
 
-  copyAssets (projectPath) {
+  copyAssets(projectPath: string) {
     // To copy a folder or file
-    log.info(`Copying assets from ${this.projectInformation.assets} to ${projectPath}`)
+    logger.info(`Copying assets from ${this.projectInformation.assets} to ${projectPath}`)
 
     // Sync:
     try {
       fse.copySync(this.projectInformation.assets, projectPath)
-      log.info('Assets are copied')
+      logger.info('Assets are copied')
     } catch (err) {
-      log.error('Cannot copy the assets')
+      logger.error('Cannot copy the assets')
       console.error(err)
       throw err
     }
   }
 
-  generate () {
-    log.debug('Loading catalog from ', this.argv.catalog)
-    log.debug('Generation project from ', this.argv.project)
-    log.info('Project output path is  ', this.argv.output)
+  generate() {
+    logger.debug('Loading catalog from ', this.argv.catalog)
+    logger.debug('Generation project from ', this.argv.project)
+    logger.info('Project output path is  ', this.argv.output)
 
-    log.info('Compilation of the template')
+    logger.info('Compilation of the template')
     try {
-      const context = {
+      const context: GenerationContext = {
         // Imports
         path: path,
         fs: fs,
         Handlebars,
-        log,
+        log: logger,
         globals: this.loadGlobals()(),
         // Context of the execution
         catalog: this.catalog,
@@ -108,27 +124,25 @@ class CodeGeneration {
         project: this.argv.project,
         JSONL,
         template: new Template(this.projectInformation),
-        requires: (modulePath) => require(path.join(this.argv.project, modulePath))
+        requires: (modulePath: string) => require(path.join(this.argv.project, modulePath))
       }
 
-      log.info('Provided globals are', context.globals)
+      logger.info('Provided globals are', context.globals)
       this.loadPartials()
       this.loadHelpers(context.globals, context)
 
-      log.info('Copying assets')
+      logger.info('Copying assets')
 
       this.copyAssets(context.output)
 
-      log.info('Execution of the code generation script')
+      logger.info('Execution of the code generation script')
       const GenerationClass = eval(context.script)
 
       const generationClass = new GenerationClass(context)
       generationClass.generate()
     } catch (e) {
-      log.error(`Cannot generate the code ${e}`)
+      logger.error(`Cannot generate the code ${e}`)
       console.log(e)
     }
   }
 }
-
-module.exports = CodeGeneration

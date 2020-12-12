@@ -6,15 +6,15 @@ const recursive = require('recursive-readdir')
 /**
  * This class is a wrapper over the catalog resources.
  */
-class Catalog {
-  constructor (catalogPath) {
-    this.catalogPath = catalogPath
+export default class Catalog {
+  constructor(public catalogPath: string) {
+
   }
 
   /**
    * Returns the catalog path if the path is a file.
    */
-  expectFile () {
+  expectFile(): string {
     const stat = fs.statSync(this.catalogPath)
     if (stat.isDirectory) {
       throw new Error(`The catalog path provided is a directory and not a file : ${this.catalogPath}`)
@@ -26,7 +26,7 @@ class Catalog {
    * Computes a catalog absolute path from a relative path argument.
    * @param {*} relativePath
    */
-  getResourcePath (relativePath) {
+  getResourcePath(relativePath: string): string {
     return path.join(this.catalogPath, relativePath)
   }
 
@@ -34,7 +34,7 @@ class Catalog {
    * Scan for all resources in the catalog folder.
    * @return A promise is returned with the list of files.
    */
-  getResources (walkFunction) {
+  getResources(): Promise<string[]> {
     const stat = fs.statSync(this.catalogPath)
     if (stat.isDirectory) {
       // Scan recursively folders for resources
@@ -48,7 +48,7 @@ class Catalog {
    * Reads a JSON resource.
    * @param {*} relativePath
    */
-  json (relativePath) {
+  json(relativePath: string): any {
     try {
       const resourcePath = this.getResourcePath(relativePath)
       if (!fs.existsSync(resourcePath)) {
@@ -61,5 +61,3 @@ class Catalog {
     }
   }
 }
-
-module.exports = Catalog

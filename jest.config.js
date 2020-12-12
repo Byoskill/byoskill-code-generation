@@ -6,7 +6,7 @@
 module.exports = {
     // All imported modules in your tests should be mocked automatically
     // automock: false,
-
+    preset: 'ts-jest',
     // Stop running tests after `n` failures
     // bail: 0,
 
@@ -90,7 +90,7 @@ module.exports = {
     notify: true,
 
     // An enum that specifies notification mode. Requires { notify: true }
-    notifyMode: "failure-change",
+    notifyMode: 'failure-change',
 
     // A preset that is used as a base for Jest's configuration
     // preset: undefined,
@@ -100,14 +100,21 @@ module.exports = {
 
     // Use this configuration option to add custom reporters to Jest
     reporters: [
-        'default',
-        ['./node_modules/jest-html-reporter', {
-            'pageTitle': 'Test Report',
-            'includeFailureMsg': true,
-            'includeConsoleLog': true
-        }],
-        ['jest-junit', { outputName: 'junitreport.xml' }]
-    ],    
+        'default', [
+            './node_modules/jest-html-reporter',
+            {
+                pageTitle: 'Test Report',
+                includeFailureMsg: true,
+                includeConsoleLog: true
+            }
+        ],
+        [
+            'jest-junit',
+            {
+                outputName: 'junitreport.xml'
+            }
+        ]
+    ],
 
     // Automatically reset mock state between every test
     // resetMocks: false,
@@ -145,7 +152,7 @@ module.exports = {
     // snapshotSerializers: [],
 
     // The test environment that will be used for testing
-    testEnvironment: 'node',
+    testEnvironment: 'node'
 
     // Options that will be passed to the testEnvironment
     // testEnvironmentOptions: {},
