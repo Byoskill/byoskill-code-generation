@@ -107,3 +107,4 @@ junitreport.xml
 test-report.html
 
 output/
+bin/

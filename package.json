@@ -4,7 +4,7 @@
   "description": "Tool to generate code ( Java, JS) from a model",
   "main": "bin/index.js",
   "scripts": {
-    "build" : "tsc",
+    "build": "tsc",
     "dev": "ts-node src/index.ts",
     "test": "jest",
     "watch": "tsc -w",
