@@ -1,9 +1,31 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-var path = require('path');
-var fs = require('fs');
-var logger = require('./logger').logger;
-var recursive = require('recursive-readdir');
+var path = __importStar(require("path"));
+var fs = __importStar(require("fs"));
+var recursive_readdir_1 = __importDefault(require("recursive-readdir"));
+var logger_1 = require("./logger");
 /**
  * This class is a wrapper over the catalog resources.
  */
@@ -16,7 +38,7 @@ var Catalog = /** @class */ (function () {
      */
     Catalog.prototype.expectFile = function () {
         var stat = fs.statSync(this.catalogPath);
-        if (stat.isDirectory) {
+        if (stat.isDirectory()) {
             throw new Error("The catalog path provided is a directory and not a file : " + this.catalogPath);
         }
         return this.catalogPath;
@@ -34,9 +56,9 @@ var Catalog = /** @class */ (function () {
      */
     Catalog.prototype.getResources = function () {
         var stat = fs.statSync(this.catalogPath);
-        if (stat.isDirectory) {
+        if (stat.isDirectory()) {
             // Scan recursively folders for resources
-            return recursive(this.catalogPath);
+            return recursive_readdir_1.default(this.catalogPath);
         }
         // Returns the file.
         return Promise.resolve([this.catalogPath]);
@@ -51,10 +73,11 @@ var Catalog = /** @class */ (function () {
             if (!fs.existsSync(resourcePath)) {
                 throw new Error("JSON " + resourcePath + " not found");
             }
-            return JSON.parse(fs.readFileSync(resourcePath));
+            var buffer = fs.readFileSync(resourcePath);
+            return JSON.parse(buffer.toString());
         }
         catch (e) {
-            logger.error('Cannot read json resource', e);
+            logger_1.logger.error('Cannot read json resource', e);
             throw new Error("Cannot read json resource " + relativePath);
         }
     };

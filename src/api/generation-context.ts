@@ -20,7 +20,6 @@ export interface GenerationContext {
     script: string,
     output: string,
     project: string,
-    JSONL: any,
     template: Template,
     requires: (modulePath: string) => any
   }

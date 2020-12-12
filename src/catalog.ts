@@ -1,7 +1,7 @@
-const path = require('path')
-const fs = require('fs')
-const { logger } = require('./logger')
-const recursive = require('recursive-readdir')
+import * as path from 'path';
+import * as fs from 'fs';
+import recursive from 'recursive-readdir';
+import { logger } from './logger';
 
 /**
  * This class is a wrapper over the catalog resources.
@@ -16,7 +16,7 @@ export default class Catalog {
    */
   expectFile(): string {
     const stat = fs.statSync(this.catalogPath)
-    if (stat.isDirectory) {
+    if (stat.isDirectory()) {
       throw new Error(`The catalog path provided is a directory and not a file : ${this.catalogPath}`)
     }
     return this.catalogPath
@@ -36,7 +36,7 @@ export default class Catalog {
    */
   getResources(): Promise<string[]> {
     const stat = fs.statSync(this.catalogPath)
-    if (stat.isDirectory) {
+    if (stat.isDirectory()) {
       // Scan recursively folders for resources
       return recursive(this.catalogPath)
     }
@@ -54,7 +54,8 @@ export default class Catalog {
       if (!fs.existsSync(resourcePath)) {
         throw new Error(`JSON ${resourcePath} not found`)
       }
-      return JSON.parse(fs.readFileSync(resourcePath))
+      const buffer = fs.readFileSync(resourcePath);
+      return JSON.parse(buffer.toString())
     } catch (e) {
       logger.error('Cannot read json resource', e)
       throw new Error(`Cannot read json resource ${relativePath}`)

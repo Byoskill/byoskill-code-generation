@@ -25,8 +25,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var fs = __importStar(require("fs"));
 var path = __importStar(require("path"));
 var handlebars_1 = __importDefault(require("handlebars"));
-var fse = require('fs-extra');
-var JSONL = require('json-literal');
+var fs_extra_1 = __importDefault(require("fs-extra"));
 var logger_1 = require("./logger");
 var template_renderer_1 = __importDefault(require("./template-renderer"));
 var catalog_1 = __importDefault(require("./catalog"));
@@ -52,7 +51,7 @@ var CodeGeneration = /** @class */ (function () {
             throw new Error('Project parameter expects a folder');
     }
     CodeGeneration.prototype.readScript = function (scriptPath) {
-        return fs.readFileSync(scriptPath, 'utf8');
+        return fs.readFileSync(scriptPath, 'utf8').toString();
     };
     CodeGeneration.prototype.loadPartials = function () {
         var _this = this;
@@ -95,7 +94,7 @@ var CodeGeneration = /** @class */ (function () {
         logger_1.logger.info("Copying assets from " + this.projectInformation.assets + " to " + projectPath);
         // Sync:
         try {
-            fse.copySync(this.projectInformation.assets, projectPath);
+            fs_extra_1.default.copySync(this.projectInformation.assets, projectPath);
             logger_1.logger.info('Assets are copied');
         }
         catch (err) {
@@ -124,7 +123,6 @@ var CodeGeneration = /** @class */ (function () {
                 script: this.readScript(this.projectInformation.script),
                 output: this.argv.output,
                 project: this.argv.project,
-                JSONL: JSONL,
                 template: new template_renderer_1.default(this.projectInformation),
                 requires: function (modulePath) { return require(path.join(_this.argv.project, modulePath)); }
             };

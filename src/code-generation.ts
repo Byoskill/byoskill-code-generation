@@ -1,10 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import Handlebars from 'handlebars'
-import { Logger } from 'winston';
 
-const fse = require('fs-extra')
-const JSONL = require('json-literal')
+import fse from 'fs-extra';
 
 
 import {logger} from './logger';
@@ -46,11 +44,11 @@ export default class CodeGeneration {
     if (!projectStat.isDirectory) throw new Error('Project parameter expects a folder')
   }
 
-  readScript(scriptPath: string) {
-    return fs.readFileSync(scriptPath, 'utf8')
+  readScript(scriptPath: string): string {
+    return fs.readFileSync(scriptPath, 'utf8').toString()    
   }
 
-  loadPartials() {
+  loadPartials(): void {
     const files: string[] = fs.readdirSync(this.projectInformation.partials)
     // listing all files using forEach
     files.forEach((fileName) => {
@@ -63,7 +61,7 @@ export default class CodeGeneration {
     })
   }
 
-  loadHelpers(globalsObject: any, contextObject: GenerationContext) {
+  loadHelpers(globalsObject: any, contextObject: GenerationContext): void {
     const files: string[] = fs.readdirSync(this.projectInformation.helpers)
     // listing all files using forEach
     files.forEach((fileName) => {
@@ -87,7 +85,7 @@ export default class CodeGeneration {
     return globals
   }
 
-  copyAssets(projectPath: string) {
+  copyAssets(projectPath: string) : void {
     // To copy a folder or file
     logger.info(`Copying assets from ${this.projectInformation.assets} to ${projectPath}`)
 
@@ -102,7 +100,7 @@ export default class CodeGeneration {
     }
   }
 
-  generate() {
+  generate(): void {
     logger.debug('Loading catalog from ', this.argv.catalog)
     logger.debug('Generation project from ', this.argv.project)
     logger.info('Project output path is  ', this.argv.output)
@@ -122,7 +120,6 @@ export default class CodeGeneration {
         script: this.readScript(this.projectInformation.script),
         output: this.argv.output,
         project: this.argv.project,
-        JSONL,
         template: new Template(this.projectInformation),
         requires: (modulePath: string) => require(path.join(this.argv.project, modulePath))
       }
