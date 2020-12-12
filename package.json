@@ -16,6 +16,10 @@
   "files": [
     "bin/",
     "src/",
+    ".eslintignore",
+    "babel.config.js",
+    "tsconfig.json",
+    "yarn.lock",
     "examples/",
     "__tests__"
   ],
