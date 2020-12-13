@@ -100,6 +100,12 @@ export default class CodeGeneration {
     }
   }
 
+  requireResource(modulePath: string) : any {
+    const modAbsPath = path.join(this.argv.project, modulePath);
+    logger.info(`Requiring resource with path ${modAbsPath}`);
+    return require(modAbsPath);
+  }
+
   generate(): void {
     logger.debug('Loading catalog from ', this.argv.catalog)
     logger.debug('Generation project from ', this.argv.project)
@@ -121,9 +127,9 @@ export default class CodeGeneration {
         output: this.argv.output,
         project: this.argv.project,
         template: new Template(this.projectInformation),
-        requires: (modulePath: string) => require(path.join(this.argv.project, modulePath))
+        requires: (modulePath: string) => this.requireResource(modulePath)
       }
-
+      
       logger.info('Provided globals are', context.globals)
       this.loadPartials()
       this.loadHelpers(context.globals, context)

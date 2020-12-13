@@ -103,6 +103,11 @@ var CodeGeneration = /** @class */ (function () {
             throw err;
         }
     };
+    CodeGeneration.prototype.requireResource = function (modulePath) {
+        var modAbsPath = path.join(this.argv.project, modulePath);
+        logger_1.logger.info("Requiring resource with path " + modAbsPath);
+        return require(modAbsPath);
+    };
     CodeGeneration.prototype.generate = function () {
         var _this = this;
         logger_1.logger.debug('Loading catalog from ', this.argv.catalog);
@@ -124,7 +129,7 @@ var CodeGeneration = /** @class */ (function () {
                 output: this.argv.output,
                 project: this.argv.project,
                 template: new template_renderer_1.default(this.projectInformation),
-                requires: function (modulePath) { return require(path.join(_this.argv.project, modulePath)); }
+                requires: function (modulePath) { return _this.requireResource(modulePath); }
             };
             logger_1.logger.info('Provided globals are', context.globals);
             this.loadPartials();
