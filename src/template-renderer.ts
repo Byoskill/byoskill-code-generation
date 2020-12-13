@@ -6,7 +6,7 @@ import * as path from 'path';
 
 
 export default class Template {
-  constructor(public project: ProjectInformation) {
+  constructor(public project: ProjectInformation, public output: string) {
   }
 
   handlebars(templateName: string, payload: any) : string {
@@ -30,5 +30,21 @@ export default class Template {
       logger.info(`Content : \n${renderedContent}`)
     }
     return renderedContent
+  }
+
+  writeHandlebars(templateName: string, payload: any, relativeOutputPath: string): void {
+    fs.writeFileSync(relativeOutputPath, this.handlebars(templateName, payload));
+  }
+
+  writeFileSync(relativePath: string, content: string) {
+    const absPath = path.join(this.output, relativePath);
+    logger.info("Writing content into the file {}", absPath);
+    fs.writeFileSync(absPath, content);
+  }
+
+  writeFile(relativePath: string, content: string, cb:fs.NoParamCallback) {
+    const absPath = path.join(this.output, relativePath);
+    logger.info("Writing content into the file {}", absPath);
+    fs.writeFile(absPath, content, cb);
   }
 }

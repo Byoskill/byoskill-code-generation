@@ -33,21 +33,22 @@ var GLOBAL_JS = 'globals.js';
 var CodeGeneration = /** @class */ (function () {
     function CodeGeneration(argv) {
         this.argv = argv;
-        logger_1.logger.info("Project sources are " + argv.project);
+        this.projectAbsPath = path.resolve(argv.project);
+        logger_1.logger.info("Project sources are " + this.projectAbsPath);
         this.projectInformation = {
-            project: argv.project,
-            templates: path.join(argv.project, 'templates'),
-            partials: path.join(argv.project, 'partials'),
-            helpers: path.join(argv.project, 'helpers'),
-            assets: path.join(argv.project, 'assets'),
-            script: path.join(argv.project, 'generation.js')
+            project: this.projectAbsPath,
+            templates: path.join(this.projectAbsPath, 'templates'),
+            partials: path.join(this.projectAbsPath, 'partials'),
+            helpers: path.join(this.projectAbsPath, 'helpers'),
+            assets: path.join(this.projectAbsPath, 'assets'),
+            script: path.join(this.projectAbsPath, 'generation.js')
         };
-        this.catalog = new catalog_1.default(argv.catalog);
-        var catalogStat = fs.lstatSync(argv.catalog);
-        if (!catalogStat.isDirectory)
-            throw new Error('Catalog parameter expects a folder');
-        var projectStat = fs.lstatSync(argv.project);
-        if (!projectStat.isDirectory)
+        this.catalogPath = path.resolve(argv.catalog);
+        this.catalog = new catalog_1.default(this.catalogPath);
+        var projectStat = fs.lstatSync(this.projectAbsPath);
+        if (!fs.existsSync(this.catalogPath))
+            throw new Error('Catalog parameter should be an existing folder or file.');
+        if (!fs.existsSync(this.projectAbsPath) || !projectStat.isDirectory())
             throw new Error('Project parameter expects a folder');
     }
     CodeGeneration.prototype.readScript = function (scriptPath) {
@@ -104,14 +105,14 @@ var CodeGeneration = /** @class */ (function () {
         }
     };
     CodeGeneration.prototype.requireResource = function (modulePath) {
-        var modAbsPath = path.join(this.argv.project, modulePath);
+        var modAbsPath = path.join(this.projectAbsPath, modulePath);
         logger_1.logger.info("Requiring resource with path " + modAbsPath);
         return require(modAbsPath);
     };
     CodeGeneration.prototype.generate = function () {
         var _this = this;
-        logger_1.logger.debug('Loading catalog from ', this.argv.catalog);
-        logger_1.logger.debug('Generation project from ', this.argv.project);
+        logger_1.logger.debug('Loading catalog from ', this.catalogPath);
+        logger_1.logger.debug('Generation project from ', this.projectAbsPath);
         logger_1.logger.info('Project output path is  ', this.argv.output);
         logger_1.logger.info('Compilation of the template');
         try {
@@ -127,8 +128,8 @@ var CodeGeneration = /** @class */ (function () {
                 generationInfo: this.projectInformation,
                 script: this.readScript(this.projectInformation.script),
                 output: this.argv.output,
-                project: this.argv.project,
-                template: new template_renderer_1.default(this.projectInformation),
+                project: this.projectAbsPath,
+                template: new template_renderer_1.default(this.projectInformation, this.argv.output),
                 requires: function (modulePath) { return _this.requireResource(modulePath); }
             };
             logger_1.logger.info('Provided globals are', context.globals);

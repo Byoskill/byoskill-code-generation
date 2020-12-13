@@ -32,6 +32,9 @@ var logger_1 = require("./logger");
 var Catalog = /** @class */ (function () {
     function Catalog(catalogPath) {
         this.catalogPath = catalogPath;
+        if (!fs.existsSync(this.catalogPath)) {
+            throw new Error("The path does not exist " + this.catalogPath);
+        }
     }
     /**
      * Returns the catalog path if the path is a file.
@@ -42,6 +45,14 @@ var Catalog = /** @class */ (function () {
             throw new Error("The catalog path provided is a directory and not a file : " + this.catalogPath);
         }
         return this.catalogPath;
+    };
+    Catalog.prototype.expectJsonObjectFile = function () {
+        logger_1.logger.info("Loading the whole catalog as a JSON file " + this.catalogPath);
+        var stat = fs.statSync(this.catalogPath);
+        if (stat.isDirectory()) {
+            throw new Error("The catalog path provided is a directory and not a file : " + this.catalogPath);
+        }
+        return JSON.parse(fs.readFileSync(this.catalogPath).toString());
     };
     /**
      * Computes a catalog absolute path from a relative path argument.

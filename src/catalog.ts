@@ -8,7 +8,9 @@ import { logger } from './logger';
  */
 export default class Catalog {
   constructor(public catalogPath: string) {
-
+    if (!fs.existsSync(this.catalogPath)) {
+      throw new Error(`The path does not exist ${this.catalogPath}`) ;
+     }
   }
 
   /**
@@ -20,6 +22,16 @@ export default class Catalog {
       throw new Error(`The catalog path provided is a directory and not a file : ${this.catalogPath}`)
     }
     return this.catalogPath
+  }
+
+  expectJsonObjectFile(): any {
+    logger.info(`Loading the whole catalog as a JSON file ${this.catalogPath}`);    
+    const stat = fs.statSync(this.catalogPath)
+    if (stat.isDirectory()) {
+      throw new Error(`The catalog path provided is a directory and not a file : ${this.catalogPath}`)      
+    }
+    
+    return JSON.parse(fs.readFileSync(this.catalogPath).toString());
   }
 
   /**
@@ -55,7 +67,7 @@ export default class Catalog {
         throw new Error(`JSON ${resourcePath} not found`)
       }
       const buffer = fs.readFileSync(resourcePath);
-      return JSON.parse(buffer.toString())
+      return JSON.parse(buffer.toString());
     } catch (e) {
       logger.error('Cannot read json resource', e)
       throw new Error(`Cannot read json resource ${relativePath}`)

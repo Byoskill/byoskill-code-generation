@@ -27,8 +27,9 @@ var logger_1 = require("./logger");
 var fs = __importStar(require("fs"));
 var path = __importStar(require("path"));
 var Template = /** @class */ (function () {
-    function Template(project) {
+    function Template(project, output) {
         this.project = project;
+        this.output = output;
     }
     Template.prototype.handlebars = function (templateName, payload) {
         logger_1.logger.debug("Generation using the template " + templateName);
@@ -48,6 +49,19 @@ var Template = /** @class */ (function () {
             logger_1.logger.info("Content : \n" + renderedContent);
         }
         return renderedContent;
+    };
+    Template.prototype.writeHandlebars = function (templateName, payload, relativeOutputPath) {
+        fs.writeFileSync(relativeOutputPath, this.handlebars(templateName, payload));
+    };
+    Template.prototype.writeFileSync = function (relativePath, content) {
+        var absPath = path.join(this.output, relativePath);
+        logger_1.logger.info("Writing content into the file {}", absPath);
+        fs.writeFileSync(absPath, content);
+    };
+    Template.prototype.writeFile = function (relativePath, content, cb) {
+        var absPath = path.join(this.output, relativePath);
+        logger_1.logger.info("Writing content into the file {}", absPath);
+        fs.writeFile(absPath, content, cb);
     };
     return Template;
 }());

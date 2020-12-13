@@ -16,7 +16,7 @@ test('Attempting to render with handlebar.js', () => {
             templates: path.join(__dirname, "../examples")
         }
 
-        const template = new Template(project);
+        const template = new Template(project, "/tmp");
         const context = {
             value: "test"
         }

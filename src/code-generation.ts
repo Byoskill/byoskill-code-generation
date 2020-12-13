@@ -24,24 +24,28 @@ export default class CodeGeneration {
 
   private projectInformation: ProjectInformation;
   private catalog: Catalog;
+  private projectAbsPath: string;
+  private catalogPath: string;
 
 
-  constructor(public argv: Args) {
-    logger.info(`Project sources are ${argv.project}`)
+  constructor(public argv: Args) {    
+    this.projectAbsPath = path.resolve(argv.project);
+    logger.info(`Project sources are ${this.projectAbsPath}`)
 
     this.projectInformation = {
-      project: argv.project,
-      templates: path.join(argv.project, 'templates'),
-      partials: path.join(argv.project, 'partials'),
-      helpers: path.join(argv.project, 'helpers'),
-      assets: path.join(argv.project, 'assets'),
-      script: path.join(argv.project, 'generation.js')
+      project: this.projectAbsPath,
+      templates: path.join(this.projectAbsPath, 'templates'),
+      partials:  path.join(this.projectAbsPath, 'partials'),
+      helpers:   path.join(this.projectAbsPath, 'helpers'),
+      assets:    path.join(this.projectAbsPath, 'assets'),
+      script:    path.join(this.projectAbsPath, 'generation.js')
     }
-    this.catalog = new Catalog(argv.catalog)
-    const catalogStat = fs.lstatSync(argv.catalog)
-    if (!catalogStat.isDirectory) throw new Error('Catalog parameter expects a folder')
-    const projectStat = fs.lstatSync(argv.project)
-    if (!projectStat.isDirectory) throw new Error('Project parameter expects a folder')
+    this.catalogPath = path.resolve(argv.catalog);
+
+    this.catalog = new Catalog(this.catalogPath)
+    const projectStat = fs.lstatSync(this.projectAbsPath)
+    if (!fs.existsSync(this.catalogPath)) throw new Error('Catalog parameter should be an existing folder or file.')
+    if (!fs.existsSync(this.projectAbsPath) || !projectStat.isDirectory()) throw new Error('Project parameter expects a folder')
   }
 
   readScript(scriptPath: string): string {
@@ -101,14 +105,14 @@ export default class CodeGeneration {
   }
 
   requireResource(modulePath: string) : any {
-    const modAbsPath = path.join(this.argv.project, modulePath);
+    const modAbsPath = path.join(this.projectAbsPath, modulePath);
     logger.info(`Requiring resource with path ${modAbsPath}`);
     return require(modAbsPath);
   }
 
   generate(): void {
-    logger.debug('Loading catalog from ', this.argv.catalog)
-    logger.debug('Generation project from ', this.argv.project)
+    logger.debug('Loading catalog from ', this.catalogPath)
+    logger.debug('Generation project from ', this.projectAbsPath)
     logger.info('Project output path is  ', this.argv.output)
 
     logger.info('Compilation of the template')
@@ -125,8 +129,8 @@ export default class CodeGeneration {
         generationInfo: this.projectInformation,
         script: this.readScript(this.projectInformation.script),
         output: this.argv.output,
-        project: this.argv.project,
-        template: new Template(this.projectInformation),
+        project: this.projectAbsPath,
+        template: new Template(this.projectInformation, this.argv.output),
         requires: (modulePath: string) => this.requireResource(modulePath)
       }
       
