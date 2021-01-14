@@ -1,6 +1,6 @@
 {
   "name": "byoskill-code-generator",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "Tool to generate code ( Java, JS) from a model",
   "main": "bin/index.js",
   "scripts": {
@@ -8,7 +8,11 @@
     "dev": "ts-node src/index.ts",
     "test": "jest",
     "watch": "tsc -w",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "release": "standard-version",
+    "release:minor": "standard-version --release-as minor",
+    "release:patch": "standard-version --release-as patch",
+    "release:major": "standard-version --release-as major"
   },
   "bin": {
     "codegenerate": "./bin/index.js"
@@ -73,6 +77,7 @@
     "jest": "^26.6.3",
     "jest-html-reporter": "^3.3.0",
     "jest-junit": "^12.0.0",
+    "standard-version": "^9.1.0",
     "tmp": "^0.2.1",
     "ts-jest": "^26.4.4",
     "ts-node": "^9.1.1",
