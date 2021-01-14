@@ -117,13 +117,14 @@ export default class CodeGeneration {
 
     logger.info('Compilation of the template')
     try {
+      const globals = this.loadGlobals()();
       const context: GenerationContext = {
         // Imports
         path: path,
         fs: fs,
         Handlebars,
         log: logger,
-        globals: this.loadGlobals()(),
+        globals: globals,
         // Context of the execution
         catalog: this.catalog,
         generationInfo: this.projectInformation,

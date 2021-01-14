@@ -116,13 +116,14 @@ var CodeGeneration = /** @class */ (function () {
         logger_1.logger.info('Project output path is  ', this.argv.output);
         logger_1.logger.info('Compilation of the template');
         try {
+            var globals = this.loadGlobals()();
             var context = {
                 // Imports
                 path: path,
                 fs: fs,
                 Handlebars: handlebars_1.default,
                 log: logger_1.logger,
-                globals: this.loadGlobals()(),
+                globals: globals,
                 // Context of the execution
                 catalog: this.catalog,
                 generationInfo: this.projectInformation,

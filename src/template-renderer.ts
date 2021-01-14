@@ -23,7 +23,7 @@ export default class Template {
     let renderedContent = hb(payload)
 
     if (payload.postRender) {
-      logger.warn('Post treatment is requested...')
+      logger.debug('Post treatment is requested...')
       renderedContent = Handlebars.compile(renderedContent)(payload)
     }
     if (payload && payload.debug) {
