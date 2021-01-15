@@ -76,7 +76,7 @@ export default class CodeGeneration {
       const partialContent = this.readScript(absPath) + ''
       const globals = globalsObject
       const context = contextObject
-      console.log(globalsObject)
+      logger.info("globals", {globalsObject});
       const helper = eval(partialContent)
       Handlebars.registerHelper(partialName, helper)
     })
@@ -149,7 +149,7 @@ export default class CodeGeneration {
       const generationClass = new GenerationClass(context)
       generationClass.generate()
     } catch (e) {
-      logger.error(`Cannot generate the code ${e}`)
+      logger.error(`Cannot generate the code ${e}`, {e})
       console.log(e)
     }
   }
