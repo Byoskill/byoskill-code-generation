@@ -1,6 +1,6 @@
 {
   "name": "byoskill-code-generator",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "description": "Tool to generate code ( Java, JS) from a model",
   "main": "bin/index.js",
   "scripts": {
