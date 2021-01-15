@@ -79,7 +79,7 @@ var CodeGeneration = /** @class */ (function () {
             var partialContent = _this.readScript(absPath) + '';
             var globals = globalsObject;
             var context = contextObject;
-            console.log(globalsObject);
+            logger_1.logger.info("globals", { globalsObject: globalsObject });
             var helper = eval(partialContent);
             handlebars_1.default.registerHelper(partialName, helper);
         });
@@ -144,7 +144,7 @@ var CodeGeneration = /** @class */ (function () {
             generationClass.generate();
         }
         catch (e) {
-            logger_1.logger.error("Cannot generate the code " + e);
+            logger_1.logger.error("Cannot generate the code " + e, { e: e });
             console.log(e);
         }
     };

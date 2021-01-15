@@ -42,7 +42,7 @@ var Template = /** @class */ (function () {
         var hb = handlebars_1.default.compile(template);
         var renderedContent = hb(payload);
         if (payload.postRender) {
-            logger_1.logger.warn('Post treatment is requested...');
+            logger_1.logger.debug('Post treatment is requested...');
             renderedContent = handlebars_1.default.compile(renderedContent)(payload);
         }
         if (payload && payload.debug) {
