@@ -18,4 +18,4 @@ var args = yargs_1.default.options({
     .command('codegenerator [catalog] [project] [output]', 'Generates code using a catalog and a generation project into an output folder.')
     .alias('h', 'help').argv;
 console.log(args);
-new code_generation_1.default(args.argv).generate();
+new code_generation_1.default(args).generate();
