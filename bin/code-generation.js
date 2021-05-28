@@ -33,6 +33,7 @@ var GLOBAL_JS = 'globals.js';
 var CodeGeneration = /** @class */ (function () {
     function CodeGeneration(argv) {
         this.argv = argv;
+        logger_1.logger.info("Project path provided " + argv.project);
         this.projectAbsPath = path.resolve(argv.project);
         logger_1.logger.info("Project sources are " + this.projectAbsPath);
         this.projectInformation = {

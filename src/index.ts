@@ -2,7 +2,7 @@
 import yargs from 'yargs';
 import CodeGeneration from './code-generation'
 
-const args : any = yargs.options({
+const args: any = yargs.options({
   'catalog': { type: 'string', demandOption: true, alias: 'c' },
   'project': { type: 'string', demandOption: true, alias: 'p' },
   'output': { type: 'string', demandOption: true, alias: 'o' },

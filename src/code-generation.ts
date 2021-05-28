@@ -5,7 +5,7 @@ import Handlebars from 'handlebars'
 import fse from 'fs-extra';
 
 
-import {logger} from './logger';
+import { logger } from './logger';
 
 import Args from './api/args';
 import Template from './template-renderer'
@@ -28,17 +28,18 @@ export default class CodeGeneration {
   private catalogPath: string;
 
 
-  constructor(public argv: Args) {    
+  constructor(public argv: Args) {
+    logger.info(`Project path provided ${argv.project}`);
     this.projectAbsPath = path.resolve(argv.project);
     logger.info(`Project sources are ${this.projectAbsPath}`)
 
     this.projectInformation = {
       project: this.projectAbsPath,
       templates: path.join(this.projectAbsPath, 'templates'),
-      partials:  path.join(this.projectAbsPath, 'partials'),
-      helpers:   path.join(this.projectAbsPath, 'helpers'),
-      assets:    path.join(this.projectAbsPath, 'assets'),
-      script:    path.join(this.projectAbsPath, 'generation.js')
+      partials: path.join(this.projectAbsPath, 'partials'),
+      helpers: path.join(this.projectAbsPath, 'helpers'),
+      assets: path.join(this.projectAbsPath, 'assets'),
+      script: path.join(this.projectAbsPath, 'generation.js')
     }
     this.catalogPath = path.resolve(argv.catalog);
 
@@ -49,7 +50,7 @@ export default class CodeGeneration {
   }
 
   readScript(scriptPath: string): string {
-    return fs.readFileSync(scriptPath, 'utf8').toString()    
+    return fs.readFileSync(scriptPath, 'utf8').toString()
   }
 
   loadPartials(): void {
@@ -76,7 +77,7 @@ export default class CodeGeneration {
       const partialContent = this.readScript(absPath) + ''
       const globals = globalsObject
       const context = contextObject
-      logger.info("globals", {globalsObject});
+      logger.info("globals", { globalsObject });
       const helper = eval(partialContent)
       Handlebars.registerHelper(partialName, helper)
     })
@@ -89,7 +90,7 @@ export default class CodeGeneration {
     return globals
   }
 
-  copyAssets(projectPath: string) : void {
+  copyAssets(projectPath: string): void {
     // To copy a folder or file
     logger.info(`Copying assets from ${this.projectInformation.assets} to ${projectPath}`)
 
@@ -104,7 +105,7 @@ export default class CodeGeneration {
     }
   }
 
-  requireResource(modulePath: string) : any {
+  requireResource(modulePath: string): any {
     const modAbsPath = path.join(this.projectAbsPath, modulePath);
     logger.info(`Requiring resource with path ${modAbsPath}`);
     return require(modAbsPath);
@@ -134,7 +135,7 @@ export default class CodeGeneration {
         template: new Template(this.projectInformation, this.argv.output),
         requires: (modulePath: string) => this.requireResource(modulePath)
       }
-      
+
       logger.info('Provided globals are', context.globals)
       this.loadPartials()
       this.loadHelpers(context.globals, context)
@@ -149,7 +150,7 @@ export default class CodeGeneration {
       const generationClass = new GenerationClass(context)
       generationClass.generate()
     } catch (e) {
-      logger.error(`Cannot generate the code ${e}`, {e})
+      logger.error(`Cannot generate the code ${e}`, { e })
       console.log(e)
     }
   }
