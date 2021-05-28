@@ -16,4 +16,4 @@ const args: any = yargs.options({
 
 console.log(args);
 
-new CodeGeneration(args.argv).generate()
+new CodeGeneration(args).generate()
